@@ -3,11 +3,7 @@ import styles from "../styles/Slug.module.css";
 import { GraphQLClient, gql } from "graphql-request";
 
 const url =process.env.ENDPOINT
-const graphcms =new GraphQLClient(url,{
-  headers: {
-    "Authorization": process.env.GRAPH_CMS_TOKEN
-  }
-})
+const graphcms =new GraphQLClient(url);
 
 const QUERY = gql`
   query Post($slug: String!) {

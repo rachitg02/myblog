@@ -3,46 +3,54 @@ import styles from "../styles/Home.module.css";
 import { GraphQLClient, gql } from "graphql-request";
 import BlogCard from "../components/BlogCard";
 
-export const getStaticProps = async () => {
-const url =process.env.ENDPOINT;
-const graphcms =new GraphQLClient(url,{
-  headers: {
-    "Authorization": process.env.GRAPH_CMS_TOKEN
-  }
-});
-const QUERY = gql`{
-  posts{
-    title,
-    datePublished,
-    content{
-      html
-    }
-    author {
-      name
-      avatar {
+const graphcms = new GraphQLClient(process.env.ENDPOINT);
+
+const QUERY = gql`
+  {
+    posts {
+      id
+      title
+      datePublished
+      slug
+      content {
+        html
+      }
+      author {
+        name
+        avatar {
+          url
+        }
+      }
+      coverPhoto {
+        publishedAt
+        createdBy {
+          id
+        }
         url
       }
     }
-    coverPhoto {
-      url
-    }
   }
-}`;
+`;
+
+export async function getStaticProps() {
   const { posts } = await graphcms.request(QUERY);
   return {
     props: {
       posts,
-    }
+    },
+    revalidate: 20,
   };
 }
 
 export default function Home({ posts }) {
   return (
-    <div>
+    <div className={styles.container}>
       <Head>
-        <title>Blog</title>
+        <title>Digital Scribbles</title>
+        <meta name="description" content="A blog tutorial made with JAMstack" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       <main className={styles.main}>
         {posts.map((post) => (
           <BlogCard
